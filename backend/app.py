@@ -1,6 +1,8 @@
+from config import CONFIG
 from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
+from uvicorn import Config, Server
 
 app = FastAPI()
 
@@ -13,8 +15,10 @@ class User(BaseModel):
 async def root():
     return {"Hello": "World"}
 
-@app.post("/user/{uid}")
-async def create_user(uid: str, user: Union[dict, None] = None):
-    if user is None:
-        return {"message": "No user data provided"}
-    return {"user_id": uid, "user_data": user}
+def run():
+    config = Config(app, host=CONFIG.host, port=CONFIG.port)
+    server = Server(config=config)
+    server.run()
+    
+if __name__ == "__main__":
+    run()
