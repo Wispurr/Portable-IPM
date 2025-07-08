@@ -40,7 +40,13 @@
     6. Run Program
 
         ```powershell
-        fastapi dev main.py
+        fastapi dev app.py
+        ```
+
+        as specific host and port
+
+        ```powershell
+        python .\app.py
         ```
 
     7. (ENDED) Deactivated Virtual Env
