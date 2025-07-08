@@ -2,8 +2,7 @@
 
 from config import CONFIG
 from typing import Union
-from fastapi import FastAPI
-from fastapi import UploadFile, File
+from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 from uvicorn import Config, Server
 import os
