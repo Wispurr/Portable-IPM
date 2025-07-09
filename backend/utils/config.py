@@ -8,6 +8,7 @@ import json
 class Config(BaseModel):
     host: Literal["0.0.0.0"] = Field(default="0.0.0.0")
     port: Literal[8080] = Field(default=8080, ge=1, le=65535)
+    debug: bool = Field(default=True, description="Enable debug mode for development")
 
 # Attempt to load the configuration from a JSON file, or create a default one if it doesn't exist
 try:
