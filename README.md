@@ -20,22 +20,29 @@ The purpose of developing an IPM system for portable vehicles is to enhance thei
 
 ```
 Portable-IPM/
-├── README.md
-├── LICENSE
 ├── .gitignore
-├── docs/                 	     # Group 4: 文件與簡報資料
-|
-├── frontend/             	     # Group 1: Flutter 專案
-|
-├── vision_processing/               # Group 2: IPM 與影像處理模組
-|
-├── backend_server/                  # Group 3: Flask / FastAPI 後端
+├── LICENSE
+├── README.md
+├── backend/                  # Group 3: FastAPI 後端
+│   ├── .gitignore
+│   ├── README.md
 │   ├── app.py
-|   ├── .gitignore
-|   ├── README.md
-│   └── requirements.txt
-├── integration_testing/             # 整合測試與 bug 修正紀錄
-|
-└── data_samples/                    # 偵測用的資料範例與圖片
+│   ├── requirements.txt
+│   ├── static/
+│   ├── templates/
+│   │   ├── exceptions.html
+│   │   └── index.html
+│   └── utils/
+│       ├── __init__.py
+│       ├── api_formatter.py
+│       ├── config.py
+│       ├── exception_handler.py
+│       └── json.py
+├── data_samples/             # 偵測用的資料範例與圖片
+├── docs/                     # Group 4: 文件與簡報資料
+│   └── WBS.md
+├── frontend/                 # Group 1: Flutter 專案
+├── integration_testing/      # 整合測試與 bug 修正紀錄
+└── vision_processing/        # Group 2: IPM 與影像處理模組
 
 ```
