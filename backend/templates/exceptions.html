@@ -1,0 +1,110 @@
+<style>
+    /* Correct font import */
+    @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
+
+    /* Colors directly specified */
+    body {
+        background-color: #0414a7; /* Blue */
+        color: #e0e2f4; /* Light Grey */
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        line-height: 1.25;
+        margin: 0;
+    }
+
+    /* Global text styling for headers and paragraphs */
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    a {
+        color: #e0e2f4; /* Light Grey */
+    }
+
+    /* Specific heading styles */
+    h1 {
+        font-size: 2.75rem;
+        line-height: 1.05em;
+    }
+
+    h2 {
+        font-size: 2.25rem;
+        line-height: 1.25em;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        line-height: 1.25em;
+        font-weight: lighter;
+    }
+
+    h4 {
+        font-size: 1.125rem;
+        line-height: 1.222em;
+        font-weight: lighter;
+    }
+
+    /* Container for centering the content */
+    .container {
+        width: 90%;
+        margin: auto;
+        max-width: 800px; /* Increased max-width for better readability */
+    }
+
+    /* BSOD section styles */
+    .bsod {
+        padding-top: 10%;
+        text-align: center;
+    }
+
+    /* Error message section */
+    .neg {
+        text-align: center;
+        color: #0414a7; /* Blue */
+    }
+
+    /* Background color for error message */
+    .bg {
+        background-color: #aaaaaa; /* Grey */
+        padding: 0 15px 2px 13px;
+    }
+
+    .title {
+        margin-bottom: 50px;
+    }
+
+    /* Navigation links styles */
+    .nav {
+        margin-top: 35px;
+    }
+
+    .link {
+        text-decoration: none;
+        padding: 0 9px 2px 8px;
+        color: #e0e2f4; /* Light Grey */
+    }
+
+    .link:hover,
+    .link:focus {
+        background-color: #aaaaaa; /* Grey */
+        color: #0414a7; /* Blue */
+    }
+</style>
+
+<main class="bsod container">
+    <h1 class="neg title">
+        <span class="bg" id="HTMLExceptions">$EXCEPTION_CODE</span>
+    </h1>
+    <p>$EXCEPTION_HINT</p>
+    <p>An error has occured, to continue:</p>
+    <p>
+        * Return to our homepage.<br />
+        * Send us an e-mail about this error and try later.
+    </p>
+    <nav class="nav">
+        <a href="/" class="link">index</a>&nbsp;|&nbsp;<a href="#" class="link"
+            >webmaster</a
+        >
+    </nav>
+</main>

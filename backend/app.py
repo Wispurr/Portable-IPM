@@ -16,10 +16,11 @@ import uuid
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-# Importing configuration settings
-from utils.config import CONFIG
-# Importing utility functions for JSON formatting
-from utils.api_formatter import build_result_json, build_error_json  # Importing utility functions for API formatting
+# HTML Exception
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+# Importing configuration and utility functions
+from utils import CONFIG, build_result_json, build_error_json, HTTPExceptionLoading  # Importing utility functions for API formatting
 
 # initialize FastAPI application
 app = FastAPI()
@@ -53,7 +54,9 @@ if CONFIG.debug:
 
 @app.post("/upload-image/", tags=["analyze-image"]) #upload image function
 async def upload_image(file: UploadFile = File(...)):
-    file_location = f"{UPLOAD_FOLDER}/image.png"
+    # file_location = f"{UPLOAD_FOLDER}/image.png"  -> 改以uuid命名避免覆蓋
+    filename = f"{uuid.uuid4().hex}.png"
+    file_location = os.path.join(UPLOAD_FOLDER, filename)
     with open(file_location , "wb") as buffer:
         content = await file.read()  # Read file content asynchronously
         buffer.write(content)  
@@ -110,6 +113,19 @@ async def root(request: Request):
     })
     return {"message": "Welcome to the IPM Model API!"}
 
+# Exception handler for HTTP exceptions
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    loader = HTTPExceptionLoading()
+    if exc.status_code == 403:
+        return await loader.error_403()
+
+    elif exc.status_code == 404:
+        return await loader.error_404()
+    elif exc.status_code == 500:
+        return await loader.error_500()
+    else:
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 # Run the FastAPI application using Uvicorn server
 def run():
