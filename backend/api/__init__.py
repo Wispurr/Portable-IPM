@@ -1,0 +1,1 @@
+from .analyze_image import router as analyze_image_router
