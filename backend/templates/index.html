@@ -11,7 +11,7 @@
         <div id="uploads">
             <h2>Upload Image</h2>
             <form
-                action="/analyze-image-ui"
+                action="/analyze-image/ui"
                 enctype="multipart/form-data"
                 method="post"
             >
@@ -33,7 +33,9 @@
         <img id="stream" width="640" height="480" />
         <script>
             const ws = new WebSocket(
-                "ws://" + location.host + "/stream/ws/image"
+                (location.protocol === "https:" ? "wss://" : "ws://") +
+                    location.host +
+                    "/stream/ws/image"
             );
             ws.onmessage = function (event) {
                 document.getElementById("stream").src =

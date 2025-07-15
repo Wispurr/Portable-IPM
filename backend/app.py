@@ -27,6 +27,7 @@ app.mount("/static", StaticFiles(directory="./static"), name="static")
 app.mount("/uploads", StaticFiles(directory="./uploads"), name="uploads")
 app.include_router(analyze_image_router)
 app.include_router(stream_router)
+TEMPLATE_PATH = "./templates/index.html"
 # print(f"API routers included successfully\n{app.routes}")
 
 # Define a User model
@@ -38,12 +39,14 @@ class User(BaseModel):
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-@app.get("/")
-async def root():
-    html = ""
-    async with aopen(TEMPLATE_PATH, "r") as f:
-        html = await f.read()
-    return HTMLResponse(html)
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    files = os.listdir(CONFIG.UPLOAD_FOLDER)
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "uploads": files
+    })
+    return {"message": "Welcome to the IPM Model API!"}
 
 # Run the FastAPI application using Uvicorn server
 def run():
