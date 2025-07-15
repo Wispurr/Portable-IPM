@@ -16,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from utils import CONFIG, build_result_json, build_error_json, HTTPExceptionLoading  # Importing utility functions for API formatting
-from api import analyze_image_router  # Importing the image analysis router
+from api import analyze_image_router, stream_router  # Importing the image analysis router
 
 # initialize FastAPI application
 app = FastAPI()
@@ -24,6 +24,8 @@ templates = Jinja2Templates(directory="./templates")
 app.mount("/static", StaticFiles(directory="./static"), name="static")
 app.mount("/uploads", StaticFiles(directory="./uploads"), name="uploads")
 app.include_router(analyze_image_router)
+app.include_router(stream_router)
+# print(f"API routers included successfully\n{app.routes}")
 
 # Define a User model
 class User(BaseModel):
