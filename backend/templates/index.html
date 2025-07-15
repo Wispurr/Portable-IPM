@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>IPM System Backend Server</title>
+    </head>
+    <body>
+        <h1>IPM System Backend Server</h1>
+        <h3>&copy;2025 Wispurr</h3>
+        <hr />
+
+        <div id="uploads">
+            <h2>Upload Image</h2>
+            <form
+                action="/analyze-image-ui"
+                enctype="multipart/form-data"
+                method="post"
+            >
+                <input type="file" name="file" accept="image/*" required />
+                <input type="submit" value="Upload Image" />
+            </form>
+        </div>
+
+        {% if uploads %}
+        <h3>Uploaded Files:</h3>
+        <ul>
+            {% for f in uploads %}
+            <li><a href="/uploads/{{ f }}">{{ f }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </body>
+</html>

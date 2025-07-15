@@ -133,3 +133,7 @@ config.json
 .tmp/
 results/
 package.cmd
+
+# Uploads directory
+./uploads/
+./uploads/*.*

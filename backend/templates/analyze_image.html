@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Upload Files - BSOD Style</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Courier New", Courier, monospace;
+            }
+
+            body {
+                background-color: #0000aa;
+                color: white;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: left;
+                padding: 40px;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 720px;
+            }
+
+            h1,
+            h3,
+            h4,
+            p {
+                margin-bottom: 1em;
+            }
+
+            .drop_box {
+                border: 2px dashed #ffffff;
+                padding: 20px;
+                margin-top: 10px;
+            }
+
+            .btn {
+                font-family: "Courier New", Courier, monospace;
+                background-color: white;
+                color: #0000aa;
+                border: none;
+                padding: 10px 20px;
+                cursor: pointer;
+            }
+
+            .btn:hover {
+                background-color: #000088;
+                color: white;
+                border: 1px solid white;
+            }
+
+            input[type="file"] {
+                display: none;
+            }
+
+            .form input[type="email"],
+            .form input[type="file"] {
+                width: 100%;
+                margin: 10px 0;
+                padding: 10px;
+                border: none;
+                background: #000088;
+                color: white;
+            }
+
+            pre {
+                background-color: #000088;
+                padding: 10px;
+                margin-top: 10px;
+                white-space: pre-wrap;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>:( OOPS</h1>
+            <h3>Your system encountered a file upload process.</h3>
+            <p>
+                Please choose a PNG file to continue. If this problem persists,
+                contact your system administrator.
+            </p>
+            <div class="drop_box">
+                <header>
+                    <h4>> Choose file below</h4>
+                </header>
+                <p>Supported type: `PNG`</p>
+                <input type="file" accept=".png" id="fileID" />
+                <button class="btn" type="button">BROWSE FILE</button>
+            </div>
+        </div>
+        <script>
+            const dropArea = document.querySelector(".drop_box"),
+                button = dropArea.querySelector("button"),
+                input = dropArea.querySelector("input[type='file']");
+            let file;
+
+            button.onclick = () => {
+                input.click();
+            };
+
+            input.addEventListener("change", function (e) {
+                if (!e.target.files.length) return;
+                file = e.target.files[0];
+                let fileName = file.name;
+                let filedata = `
+      <form class="form" enctype="multipart/form-data" method="post" action="/analyze-image/">
+        <h4>> Selected: ${fileName}</h4>
+        <input type="file" name="file" />
+        <button class="btn" type="submit">UPLOAD</button>
+      </form>`;
+                dropArea.innerHTML = filedata;
+
+                const form = dropArea.querySelector("form");
+                const hiddenInput = form.querySelector('input[type="file"]');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                hiddenInput.files = dt.files;
+
+                form.addEventListener("submit", function (ev) {
+                    ev.preventDefault();
+                    const formData = new FormData(form);
+                    formData.set("file", file);
+
+                    fetch("/analyze-image/", {
+                        method: "POST",
+                        body: formData,
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            dropArea.innerHTML = `<h4>> Upload successful</h4><pre>${JSON.stringify(
+                                data,
+                                null,
+                                2
+                            )}</pre>`;
+                        })
+                        .catch((error) => {
+                            dropArea.innerHTML = `<h4>> Upload failed</h4><pre>${error}</pre>`;
+                        });
+                });
+            });
+        </script>
+    </body>
+</html>
