@@ -28,5 +28,18 @@
             {% endfor %}
         </ul>
         {% endif %}
+
+
+    <h2>即時攝影機串流</h2>
+    <img id="stream" width="640" height="480" />
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws/stream"); // 根據你的 FastAPI 埠號調整
+        ws.onmessage = function(event) {
+            document.getElementById("stream").src = "data:image/jpeg;base64," + event.data;
+        };
+        ws.onclose = function() {
+            alert("WebSocket 已關閉");
+        };
+    </script>
     </body>
 </html>
