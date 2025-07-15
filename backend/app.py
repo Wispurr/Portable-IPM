@@ -2,10 +2,13 @@
 
 from config import CONFIG
 from typing import Union
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, WebSocket
 from pydantic import BaseModel
 from uvicorn import Config, Server
 import os
+import base64
+import asyncio
+import cv2
 
 # initialize FastAPI application
 app = FastAPI()
@@ -15,7 +18,6 @@ class User(BaseModel):
     uid: str
     name: str
     isRoot: Union[bool, None] = None
-<<<<<<< HEAD
     
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -28,10 +30,25 @@ async def upload_image(file: UploadFile = File(...)):
         buffer.write(content)  
     return{"message": "Upload successful", "filename": file.filename}
 
-=======
-
-# index route
->>>>>>> 1fee790957afc2f1d7422fdfedc099b3c881d2e8
+@app.websocket("/ws/stream")
+async def websocket_stream(websocket: WebSocket):
+    await websocket.accept()
+    cap = cv2.VideoCapture(0)  # Open the default camera
+    try:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            # Encode the frame as JPEG
+            _, buffer = cv2.imencode('.jpg', frame)
+            img_b64 = base64.b64encode(buffer).decode('utf-8')
+            await websocket.send_text(img_b64)
+            await asyncio.sleep(0.03)
+    except Exception as e:
+        print("Error: ", e)
+    finally:
+        cap.release()
+        await websocket.close()
 @app.get("/")
 async def root():
     return {"Hello": "World"}
