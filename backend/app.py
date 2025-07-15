@@ -6,6 +6,8 @@ from pydantic import BaseModel
 # for server configuration and running the FastAPI app
 from uvicorn import Config, Server
 import os
+from aiofiles import open as aopen
+
 # for handling file uploads and responses
 from fastapi.responses import JSONResponse, HTMLResponse
 # Templates and static files for serving HTML and static content
@@ -32,36 +34,16 @@ class User(BaseModel):
     uid: str
     name: str
     isRoot: Union[bool, None] = None
+    
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# index route
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    files = os.listdir(CONFIG.UPLOAD_FOLDER)
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "uploads": files
-    })
-    return {"message": "Welcome to the IPM Model API!"}
-
-# Exception handler for HTTP exceptions
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    loader = HTTPExceptionLoading()
-    if exc.status_code == 403:
-        return await loader.error_403()
-    elif exc.status_code == 404:
-        return await loader.error_404()
-    elif exc.status_code == 405:
-        return await loader.error_405()
-    elif exc.status_code == 500:
-        return await loader.error_500()
-    else:
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
-
-@app.exception_handler(Exception)
-async def unhandled_exception_handler(request: Request, exc: Exception):
-    loader = HTTPExceptionLoading()
-    return await loader.error_500()
+@app.get("/")
+async def root():
+    html = ""
+    async with aopen(TEMPLATE_PATH, "r") as f:
+        html = await f.read()
+    return HTMLResponse(html)
 
 # Run the FastAPI application using Uvicorn server
 def run():
