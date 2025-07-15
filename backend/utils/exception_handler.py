@@ -26,5 +26,8 @@ class HTTPExceptionLoading:
     async def error_404(self) -> HTMLResponse:
         return await self._render("404 NOT FOUND")
 
+    async def error_405(self) -> HTMLResponse:
+        return await self._render("405 METHOD NOT ALLOWED")
+
     async def error_500(self) -> HTMLResponse:
         return await self._render("500 INTERNAL SERVER ERROR")

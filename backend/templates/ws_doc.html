@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebSocket Image Stream Demo</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                text-align: center;
+                background: #f9f9f9;
+            }
+            img {
+                max-width: 90%;
+                border: 2px solid #444;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>WebSocket Image Streaming Demo</h1>
+        <p>連線到 <code>/stream/ws/image</code> 串流影像</p>
+        <img id="image" src="" alt="Streaming image will appear here" />
+        <script>
+            const ws = new WebSocket(
+                "ws://" + location.host + "/stream/ws/image"
+            );
+            ws.onmessage = function (event) {
+                const imgEl = document.getElementById("image");
+                imgEl.src = "data:image/jpeg;base64," + event.data;
+            };
+            ws.onopen = () => console.log("WebSocket 連線成功");
+            ws.onerror = (e) => console.error("WebSocket 錯誤:", e);
+            ws.onclose = () => console.warn("WebSocket 已關閉");
+        </script>
+    </body>
+</html>

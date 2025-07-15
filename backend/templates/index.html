@@ -11,7 +11,7 @@
         <div id="uploads">
             <h2>Upload Image</h2>
             <form
-                action="/analyze-image-ui"
+                action="/analyze-image/ui"
                 enctype="multipart/form-data"
                 method="post"
             >
@@ -28,5 +28,22 @@
             {% endfor %}
         </ul>
         {% endif %}
+
+        <h2>即時攝影機串流</h2>
+        <img id="stream" width="640" height="480" />
+        <script>
+            const ws = new WebSocket(
+                (location.protocol === "https:" ? "wss://" : "ws://") +
+                    location.host +
+                    "/stream/ws/image"
+            );
+            ws.onmessage = function (event) {
+                document.getElementById("stream").src =
+                    "data:image/jpeg;base64," + event.data;
+            };
+            ws.onclose = function () {
+                alert("WebSocket 已關閉");
+            };
+        </script>
     </body>
 </html>
