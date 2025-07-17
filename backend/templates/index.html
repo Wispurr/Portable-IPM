@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en">
     <head>
         <title>IPM System Backend Server</title>
     </head>
@@ -30,7 +30,7 @@
         {% endif %}
 
         <h2>即時攝影機串流</h2>
-        <img id="stream" width="640" height="480" />
+        <img id="stream" width="640" height="480" alt="WS Video Stream" />
         <script>
             const ws = new WebSocket(
                 (location.protocol === "https:" ? "wss://" : "ws://") +

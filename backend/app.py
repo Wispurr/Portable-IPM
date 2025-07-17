@@ -46,7 +46,6 @@ async def root(request: Request):
         "request": request,
         "uploads": files
     })
-    return {"message": "Welcome to the IPM Model API!"}
 
 # Run the FastAPI application using Uvicorn server
 def run():
