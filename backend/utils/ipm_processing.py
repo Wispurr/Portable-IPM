@@ -5,7 +5,7 @@ if CONFIG.debug:
     def ipm_process(image_path: str) -> str:
         return image_path
 
-    def object_detection(image_path: str) -> tuple:
+    def object_detection() -> tuple:
         offset = {"x": 12, "y": -2}
         obstacles = [
             {"type": "cone", "x": 120, "y": 220},
