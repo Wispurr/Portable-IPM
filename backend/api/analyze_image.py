@@ -67,10 +67,10 @@ async def analyze_image(
 
         # Call image processing modules
         ipm_path = ipm_process(file_path)
-        offset, obstacles, warnings = object_detection(ipm_path)
+        offset, obstacles, warnings, encoded = object_detection(ipm_path)
 
         # Build and return result
-        result = build_result_json(offset, obstacles, warnings)
+        result = build_result_json(offset, obstacles, warnings, encoded)
         return JSONResponse(content=result)
 
     except HTTPException as he:
