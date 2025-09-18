@@ -1,0 +1,22 @@
+{
+  "timestamp": 1758198863.4999917,
+  "processing_results": {
+    "perspective_transform": true,
+    "color_detection": {
+      "objects": [],
+      "color_counts": {
+        "Red": 0,
+        "Blue": 0,
+        "Yellow": 0
+      }
+    },
+    "lane_detection": {
+      "left_lines_count": 2,
+      "right_lines_count": 5,
+      "lane_center_x": 180.95,
+      "offset_px": 139.05,
+      "confidence": 0.7
+    }
+  },
+  "processing_time": 0.00599980354309082
+}

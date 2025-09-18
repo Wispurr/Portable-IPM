@@ -29,8 +29,10 @@ async def stream(websocket: WebSocket):
             await asyncio.sleep(0.05)
     except Exception as e:
         print(f"WebSocket closed: {e}")
+        await websocket.close()
     finally:
         cap.release()
+        await websocket.close()
 
 
 @router.get("/ws-doc", response_class=HTMLResponse)
