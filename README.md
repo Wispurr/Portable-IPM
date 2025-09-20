@@ -18,6 +18,103 @@ The purpose of developing an IPM system for portable vehicles is to enhance thei
 
 ## Repo File Framework
 
+-   Ver 2.0
+
+```
+.
+├── LICENSE
+├── README.md
+├── app.py
+├── backend
+│   ├── README.md
+│   ├── __pycache__
+│   │   ├── app.cpython-312.pyc
+│   │   ├── config.cpython-312.pyc
+│   │   └── main.cpython-312.pyc
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── shared_camera_manager.py
+│   │   └── stream_service.py
+│   ├── app.py
+│   ├── config.json
+│   ├── js
+│   ├── package.cmd
+│   ├── static
+│   ├── templates
+│   │   ├── analyze_image.html
+│   │   ├── exceptions.html
+│   │   ├── index.html
+│   │   └── ws_doc.html
+│   ├── uploads
+│   └── utils
+│       ├── __init__.py
+│       ├── __pycache__
+│       ├── config.json
+│       ├── config.py
+│       ├── exception_handler.py
+│       ├── json.py
+│       └── vision_processing
+├── config.json
+├── docs
+│   └── WBS.md
+├── frontend
+│   ├── README.md
+│   ├── analysis_options.yaml
+│   ├── android
+│   │   ├── app
+│   │   ├── build
+│   │   ├── build.gradle.kts
+│   │   ├── gradle
+│   │   ├── gradle.properties
+│   │   ├── local.properties
+│   │   └── settings.gradle.kts
+│   ├── build
+│   │   ├── 752c4392497756140c7f3a991c47851a
+│   │   ├── b9dbe592fc2ae558329e0a126bb30b5a.cache.dill.track.dill
+│   │   ├── flutter_assets
+│   │   ├── native_assets
+│   │   └── windows
+│   ├── ios
+│   │   ├── Flutter
+│   │   ├── Runner
+│   │   ├── Runner.xcodeproj
+│   │   ├── Runner.xcworkspace
+│   │   └── RunnerTests
+│   ├── lib
+│   │   ├── data_display_panel.dart
+│   │   ├── main.dart
+│   │   └── sensor_data.dart
+│   ├── linux
+│   │   ├── CMakeLists.txt
+│   │   ├── flutter
+│   │   └── runner
+│   ├── macos
+│   │   ├── Flutter
+│   │   ├── Runner
+│   │   ├── Runner.xcodeproj
+│   │   ├── Runner.xcworkspace
+│   │   └── RunnerTests
+│   ├── pubspec.lock
+│   ├── pubspec.yaml
+│   ├── test
+│   │   └── widget_test.dart
+│   ├── web
+│   │   ├── favicon.png
+│   │   ├── icons
+│   │   ├── index.html
+│   │   └── manifest.json
+│   └── windows
+│       ├── CMakeLists.txt
+│       ├── flutter
+│       └── runner
+└── requirements.txt
+
+45 directories, 43 files
+```
+
+-   Ver 1.0
+
 ```
 Portable-IPM/
 ├── .gitignore
@@ -44,5 +141,4 @@ Portable-IPM/
 ├── frontend/                 # Group 1: Flutter 專案
 ├── integration_testing/      # 整合測試與 bug 修正紀錄
 └── vision_processing/        # Group 2: IPM 與影像處理模組
-
 ```
