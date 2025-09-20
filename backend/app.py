@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 # HTML Exception
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from utils import CONFIG, build_result_json, build_error_json, HTTPExceptionLoading  # Importing utility functions for API formatting
+from utils import CONFIG #, build_result_json, build_error_json, HTTPExceptionLoading  # Importing utility functions for API formatting
 from api import stream_service_router
 
 # initialize FastAPI application
