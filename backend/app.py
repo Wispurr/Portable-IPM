@@ -17,16 +17,17 @@ from fastapi.staticfiles import StaticFiles
 # HTML Exception
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from utils import CONFIG, build_result_json, build_error_json, HTTPExceptionLoading  # Importing utility functions for API formatting
-from api import analyze_image_router, stream_router  # Importing the image analysis router
+from utils import CONFIG #, build_result_json, build_error_json, HTTPExceptionLoading  # Importing utility functions for API formatting
+from api import stream_service_router
 
 # initialize FastAPI application
 app = FastAPI()
 templates = Jinja2Templates(directory="./templates")
 app.mount("/static", StaticFiles(directory="./static"), name="static")
 app.mount("/uploads", StaticFiles(directory="./uploads"), name="uploads")
-app.include_router(analyze_image_router)
-app.include_router(stream_router)
+# app.include_router(analyze_image_router)
+# app.include_router(stream_router)
+app.include_router(stream_service_router)
 TEMPLATE_PATH = "./templates/index.html"
 # print(f"API routers included successfully\n{app.routes}")
 
