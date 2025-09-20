@@ -1,31 +1,28 @@
-from utils import CONFIG
-import cv2
-import base64
-from fastapi import HTTPException
+import argparse
+from utils.vision_processing.vision_processing import RealTimeIPMProcessor
 
-# for Debug(when IPM process and object detection are not available)
-if CONFIG.debug:
-    def ipm_process(image_path: str) -> str:
-        return image_path
+def ipm_processing():
+    parser = argparse.ArgumentParser(description="IPM Processing System")
+    parser.add_argument("--video", default=0, help="Video source (file path or camera index)")
+    parser.add_argument("--output", default=None, help="Output file path")
+    parser.add_argument("--display", action="store_true", help="Display results in real-time")
+    parser.add_argument("--no-perspective", action="store_true", help="Disable perspective transform")
+    parser.add_argument("--no-color", action="store_true", help="Disable color detection")
+    parser.add_argument("--no-lane", action="store_true", help="Disable lane detection")
 
-    def object_detection(ipm_path: str) -> tuple:
-        # Read image using OpenCV
-        img = cv2.imread(ipm_path)
-        if img is None:
-            raise HTTPException(status_code=400, detail=f"Failed to load image from {ipm_path}")
+    args = parser.parse_args()
 
-        success, buffer = cv2.imencode(".png", img)
-        if not success:
-            raise RuntimeError("Failed to encode image")
+    config = {
+        'video_source': args.video,
+        'output_file': args.output,
+        'display_realtime': args.display,
+        'enable_perspective_transform': not args.no_perspective,
+        'enable_color_detection': not args.no_color,
+        'enable_lane_detection': not args.no_lane,
+    }
 
-        #  Encode to base64 string
-        encoded = base64.b64encode(buffer).decode("utf-8")
-        encoded_str = f"data:image/png;base64,{encoded}"
+    processor = RealTimeIPMProcessor(config)
+    processor.run()
 
-        offset = {"x": 12, "y": -2}
-        obstacles = [
-            {"type": "cone", "x": 120, "y": 220},
-            {"type": "pedestrian", "x": 300, "y": 180}
-        ]
-        warnings = ["obstacle-nearby", "left-deviation"]
-        return offset, obstacles, warnings, encoded_str
+if __name__ == "__main__":
+    ipm_processing()

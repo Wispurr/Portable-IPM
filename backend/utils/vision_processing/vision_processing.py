@@ -611,95 +611,86 @@ class RealTimeIPMProcessor:
             avg_time = np.mean(self.stats['processing_times'])
             print(f"平均處理時間: {avg_time*1000:.1f}ms")
 
-def main():
-    """主函數"""
-    parser = argparse.ArgumentParser(description='即時IPM視頻處理常式')
-    parser.add_argument('--source', '-s', default=0, 
-                       help='視頻源 (0為攝像頭，或視頻檔路徑)')
-    parser.add_argument('--output', '-o', help='輸出視頻檔路徑')
-    parser.add_argument('--config', '-c', help='設定檔路徑(JSON)')
-    parser.add_argument('--fps', type=int, default=30, help='目標FPS')
-    parser.add_argument('--process-every', type=int, default=1, help='每N幀處理一次')
-    parser.add_argument('--no-display', action='store_true', help='不顯示即時畫面')
-    parser.add_argument('--save-frames', action='store_true', help='保存處理後的幀')
-    parser.add_argument('--no-perspective', action='store_true', help='禁用透視變換')
-    parser.add_argument('--no-colors', action='store_true', help='禁用顏色檢測')
-    parser.add_argument('--perspective-points', help='透視變換點JSON檔或預設名稱')
-    parser.add_argument('--save-perspective', help='保存選擇的透視變換點到檔')
-    
-    parser.add_argument('--no-lanes', action='store_true', help='禁用車道檢測')
-    
-    args = parser.parse_args()
-    
-    # 載入配置
-    config = {}
-    if args.config and Path(args.config).exists():
-        with open(args.config, 'r', encoding='utf-8') as f:
-            config = json.load(f)
-    
-    # 應用命令列參數
-    config.update({
-        'video_source': args.source,
-        'output_video': args.output,
-        'target_fps': args.fps,
-        'process_every_n_frames': args.process_every,
-        'display_realtime': not args.no_display,
-        'save_frames': args.save_frames,
-        'enable_perspective_transform': not args.no_perspective,
-        'enable_color_detection': not args.no_colors,
-        'enable_lane_detection': not args.no_lanes
-    })
-    
-    # 初始化處理器
-    processor = RealTimeIPMProcessor(config)
-    
-    # 預載入透視變換點
-    if args.perspective_points:
-        if args.perspective_points.endswith('.json') and Path(args.perspective_points).exists():
-            with open(args.perspective_points, 'r') as f:
-                points_data = json.load(f)
-                processor.perspective_points = points_data.get('points', [])
-                if len(processor.perspective_points) == 4:
-                    processor._calculate_perspective_matrix()
-                    print(f"✅ 從檔載入透視變換點: {args.perspective_points}")
-        elif args.perspective_points == 'road':
-            # 道路預設（梯形）
-            processor.perspective_points = [(576, 324), (704, 324), (1020, 684), (300, 684)]
-            processor._calculate_perspective_matrix()
-            print("✅ 使用道路預設透視變換點")
-        elif args.perspective_points == 'parking':
-            # 停車場預設（矩形）
-            processor.perspective_points = [(480, 270), (800, 270), (800, 810), (480, 810)]
-            processor._calculate_perspective_matrix()
-            print("✅ 使用停車場預設透視變換點")
-    
-    print("🚀 即時IPM視頻處理常式")
-    print(f"視頻源: {config['video_source']}")
-    print(f"目標FPS: {config['target_fps']}")
-    print(f"處理頻率: 每{config['process_every_n_frames']}幀")
-    print(f"透視變換: {'✓' if config['enable_perspective_transform'] else '✗'}")
-    print(f"顏色檢測: {'✓' if config['enable_color_detection'] else '✗'}")
-    print(f"車道檢測: {'✓' if config['enable_lane_detection'] else '✗'}")
-    
-    # 開始處理
-    try:
-        processor.run_realtime_processing()
-        
-        # 保存透視變換點（如果指定）
-        if args.save_perspective and processor.perspective_points:
-            save_data = {
-                'points': processor.perspective_points,
-                'timestamp': datetime.now().isoformat(),
-                'video_source': args.source
-            }
-            with open(args.save_perspective, 'w') as f:
-                json.dump(save_data, f, indent=2)
-            print(f"💾 透視變換點已保存到: {args.save_perspective}")
+    def process_single_frame(self):
+        """
+        處理攝像頭的單幀圖像 (用於API調用)
+        返回: offset, obstacles, warnings, encoded_frame
+        """
+        try:
+            # 設置攝像頭
+            self.setup_video_source()
             
-    except Exception as e:
-        print(f"❌ 程式執行錯誤: {e}")
-        import traceback
-        traceback.print_exc()
+            # 讀取一幀
+            ret, frame = self.cap.read()
+            if not ret:
+                raise RuntimeError("無法從攝像頭讀取圖像")
+            
+            # 如果需要透視變換但還沒有設置點，使用默認點
+            if self.config['enable_perspective_transform'] and not self.perspective_points:
+                self.load_default_perspective_points(frame.shape)
+            
+            # 處理這一幀
+            processed_frame, frame_results = self.process_frame(frame)
+            
+            # 提取處理結果
+            offset = 0.0
+            obstacles = []
+            warnings = []
+            
+            # 從處理結果中提取車道偏移信息
+            if 'lane_detection' in frame_results.get('processing_results', {}):
+                lane_data = frame_results['processing_results']['lane_detection']
+                offset = lane_data.get('offset_px', 0.0)
+                confidence = lane_data.get('confidence', 0.0)
+                
+                if confidence < 0.5:
+                    warnings.append("車道檢測置信度低")
+                
+                if abs(offset) > 50:  # 偏移超過50像素
+                    warnings.append(f"車道偏移過大: {offset:.1f}px")
+            
+            # 從顏色檢測結果中提取障礙物信息
+            if 'color_detection' in frame_results.get('processing_results', {}):
+                color_data = frame_results['processing_results']['color_detection']
+                objects = color_data.get('objects', [])
+                    
+                for obj in objects:
+                    obstacle = {
+                        'type': obj['color'],
+                        'position': obj['center'],
+                        'bbox': obj['bbox'],
+                        'area': obj['area']
+                    }
+                    obstacles.append(obstacle)
+            
+            # 編碼處理後的幀為JPEG (方便API傳輸)
+            _, buffer = cv2.imencode('.jpg', processed_frame)
+            encoded_frame = buffer.tobytes()
+            
+            return offset, obstacles, warnings, encoded_frame
+        
+        except Exception as e:
+            print(f"❌ 單幀處理錯誤: {e}")
+            return 0.0, [], [str(e)], None
 
-if __name__ == "__main__":
-    main()
+    def get_latest_results(self):
+        """
+        獲取最新的處理結果
+        返回: offset, obstacles, warnings, encoded_frame
+        """
+        try:
+            if hasattr(self, 'offset'):
+                return self.offset, self.obstacles, self.warnings, self.encoded_frame
+            else:
+                return 0.0, [], ["尚未開始處理"], None
+        except:
+            return 0.0, [], ["獲取結果失敗"], None
+
+    def store_results(self, offset, obstacles, warnings, encoded_frame):
+        """
+        存儲處理結果供後續調用
+        """
+        self.offset = offset
+        self.obstacles = obstacles  
+        self.warnings = warnings
+        self.encoded_frame = encoded_frame
