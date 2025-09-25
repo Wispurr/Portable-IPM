@@ -23,6 +23,10 @@ from api import stream_service_router
 # initialize FastAPI application
 app = FastAPI()
 templates = Jinja2Templates(directory="./templates")
+if not os.path.exists("./static"):
+    os.makedirs("./static")
+if not os.path.exists("./uploads"):
+    os.makedirs("./uploads")
 app.mount("/static", StaticFiles(directory="./static"), name="static")
 app.mount("/uploads", StaticFiles(directory="./uploads"), name="uploads")
 # app.include_router(analyze_image_router)
